@@ -19,8 +19,8 @@ void docDuLieuDauVao(CauTrucCanh **canh, int SoCanh, FILE *input)
 	*canh = (CauTrucCanh*)malloc(SoCanh * sizeof(CauTrucCanh));
 	for(int i = 0; i < SoCanh; i++)
 	{
-		fscanf(input, "%d %d %d", &(*canh+i)->Dau, &(*canh+i)->Duoi, &(*canh+i)->TrongSo);
-		printf("\n%d %d %d", (*canh+i)->Dau, (*canh+i)->Duoi, (*canh+i)->TrongSo);
+		fscanf(input, "%d %d %d", &(*canh)[i].Dau, &(*canh)[i].Duoi, &(*canh)[i].TrongSo);
+		printf("\n%d %d %d", (*canh)[i].Dau, (*canh)[i].Duoi, (*canh)[i].TrongSo);
 	}
 } 
 
@@ -31,11 +31,11 @@ void veCanh(CauTrucCanh *canh, int SoCanh, int x[], int y[])
 	//setcolor(GREEN);       //mau cho duong ke noi
 	for(int i=0; i<SoCanh;i++)
 	{
-		line(x[(canh+i)->Dau], y[(canh+i)->Dau], x[(canh+i)->Duoi], y[(canh+i)->Duoi]);
+		line(x[canh[i].Dau], y[canh[i].Dau], x[canh[i].Duoi], y[canh[i].Duoi]);
 		setbkcolor(BLACK);
-		num = (canh+i)->TrongSo;
+		num = canh[i].TrongSo;
 		sprintf(str, "%d", num);   
-		outtextxy((x[(canh+i)->Dau] + x[(canh+i)->Duoi]) / 2 -15, (y[(canh+i)->Dau] + y[(canh+i)->Duoi]) / 2 -15, str);
+		outtextxy((x[canh[i].Dau] + x[canh[i].Duoi]) / 2 -15, (y[canh[i].Dau] + y[canh[i].Duoi]) / 2 -15, str);
 	}
 }
 
@@ -77,8 +77,8 @@ int main()
 	CauTrucCanh *canh;
 	docDuLieuDauVao(&canh, SoCanh, input);
 	initwindow(1800,1000); //dat kich thuoc cho cua so
-	int gd = DETECT, gm;
-   	initgraph(&gd, &gm, "");
+	//int gd = DETECT, gm;
+   	//initgraph(&gd, &gm, "");
 	xTT = 500, yTT = 500;
 	veDoThi(canh, SoDinh, SoCanh, xTT, yTT);
 	xTT = 1300;
