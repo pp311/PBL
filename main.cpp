@@ -66,7 +66,7 @@ void veCanh(int x1, int y1, int x2, int y2)
 	}
 	else if((x1 < x2) && (y1 > y2) || (x1 > x2) && (y1 < y2))			// duong ke noi co chieu  / 
 	{
-		line(xNho + r*cosA, yTo - r*sinA, xTo - r*sinA, yNho + r*cosA);
+		line(xNho + r*cosA, yTo - r*sinA, xTo - r*cosA, yNho + r*sinA);
 	}
 }
 void veCanhBanDau(Dinh *dinh, int SoDinh, int x[], int y[])
