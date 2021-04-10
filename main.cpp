@@ -3,71 +3,76 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #define PI 3.14
 
 typedef struct Dinh{
-	int chiSoDinh;
+	int ChiSoDinh;
 	Dinh *next;
 }Dinh;
+Dinh *taoDinh();
+void docDuLieuDauVao(Dinh **dinh, int *SoDinh, FILE *input);
+void inKetQua(int DinhDau[], int DinhDuoi[], int SoDinh);
+void DFS(Dinh *dinh, int ChuaXet[], int i, int DinhDau[], int DinhDuoi[],int *dem);
+void veCanhBanDau(Dinh *dinh, int SoDinh, int x[], int y[]);
+void veCanhKetQua(int DinhDau[], int DinhDuoi[], int SoDinh, int x[], int y[]);
+void veDoThi(Dinh *dinh, int SoDinh, int xTT, int yTT, int x[], int y[]);
+void veCanh(int x1, int y1, int x2, int y2);
+
 Dinh *taoDinh()
 {
 	Dinh *dinhMoi = (Dinh*)malloc(sizeof(Dinh));
 	dinhMoi->next = NULL;
 	return dinhMoi;
 }
-int docDuLieuDauVao(Dinh **dinh, int SoDinh, FILE *input)
+void docDuLieuDauVao(Dinh **dinh, int *SoDinh, FILE *input)
 {
 	char str[100], *s;
-	fseek(input, SEEK_CUR+1, SEEK_CUR);						//dua con tro ao trong file xuong dong
-	*dinh = (Dinh*)malloc(SoDinh * SoDinh * sizeof(Dinh));
+fscanf(input, "%d", &(*SoDinh)); 
+	printf("So dinh: %d\n", *SoDinh);
+	fseek(input, SEEK_CUR+1, SEEK_CUR);	//cho con tro ao trong file xuong dong
+	*dinh = (Dinh*)malloc(pow(*SoDinh, 2) * sizeof(Dinh));
 	printf("Danh sach ke: \n");
-	for(int i=1; i <= SoDinh; i++)
+	for(int i=1; i <= *SoDinh; i++)
 	{
-		(*dinh)[i].chiSoDinh = i;
-		Dinh *temp = (*dinh+i);
-		fgets(str, 1024, input);
+		(*dinh+i)->ChiSoDinh = i; 		//tao con tro temp de giu (*dinh+i) la con
+		Dinh *temp = (*dinh+i);		//tro chi toi dau moi danh sach dinh ke i
+		fgets(str, 1024, input);			//doc 1 dong trong file input, luu vao str
 		s = str;
 		printf("%d -> ", i);
-		while(1)
+		while(*s != '\n')
 		{
-			if(*s  == '\n') break;
 			Dinh *dinhMoi = taoDinh();
 			temp->next = dinhMoi;
 			temp = dinhMoi;
-			(*dinhMoi).chiSoDinh = strtol(s, &s, 10);
-			printf("%d -> ", (*dinhMoi).chiSoDinh);
+			dinhMoi->ChiSoDinh = strtol(s, &s, 10);
+			printf("%d -> ", dinhMoi->ChiSoDinh);
 		}
 		printf("NULL \n");
 	}
 } 
 void veCanh(int x1, int y1, int x2, int y2)
 {
-	setcolor(WHITE);								//dat mau cho duong ke noi
+	setcolor(WHITE);					//mau duong ke noi		
 	int r = 30;
-	float doDaiCanh = sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));			//tinh do dai duong ke noi
-	float cosA = abs(x1 - x2) / doDaiCanh;						//tinh goc nghieng cua duong ke noi
-	float sinA = abs(y1 - y2) / doDaiCanh;
+	float DoDaiCanh = sqrt(pow(x1 - x2, 2) + pow(y1 - y2, 2));			
+	float cosA = abs(x1 - x2) / DoDaiCanh;						
+	float sinA = abs(y1 - y2) / DoDaiCanh;
 	int xTo = (x1 > x2) ? x1 : x2, xNho = (x1 < x2) ? x1 : x2;
 	int yTo = (y1 > y2) ? y1 : y2, yNho = (y1 < y2) ? y1 : y2;
-	if(x1 == x2)									//duong ke noi cho chieu  | 
+	if(x1 == x2)							//duong noi co chieu |	
 	{
 		if(y1 == yTo) line(x1, y1 - r, x2, y2 + r);
 		else line(x1, y1 + r, x2, y2 - r);
 	}
-	else if(y1 == y2)								//duong ke noi co chieu  -- 
+	else if(y1 == y2)						//duong noi co chieu -- 
 	{
 		if(x1 == xTo) line(x1 - r, y1, x2 + r, y2);
 		else line(x1 + r, y1, x2 - r, y2);
 	}
-	else if((x1 < x2) && (y1 < y2) || (x1 > x2) && (y1 > y2))			//duong ke noi cho chieu \ . 
-	{
-		line(xTo - r*cosA, yTo - r*sinA, xNho + r*cosA, yNho + r*sinA);
-	}
-	else if((x1 < x2) && (y1 > y2) || (x1 > x2) && (y1 < y2))			// duong ke noi co chieu  / 
-	{
-		line(xNho + r*cosA, yTo - r*sinA, xTo - r*cosA, yNho + r*sinA);
-	}
+	else if((x1 < x2) && (y1 < y2) || (x1 > x2) && (y1 > y2))	//duong noi co chieu \ 	.
+		line(xTo - r * cosA, yTo - r * sinA, xNho + r * cosA, yNho + r * sinA);
+	else if((x1 < x2) && (y1 > y2) || (x1 > x2) && (y1 < y2))	//duong noi co chieu /	
+		line(xNho + r * cosA, yTo - r * sinA, xTo - r * cosA, yNho + r * sinA);
 }
 void veCanhBanDau(Dinh *dinh, int SoDinh, int x[], int y[])
 {
@@ -78,16 +83,16 @@ void veCanhBanDau(Dinh *dinh, int SoDinh, int x[], int y[])
 		while(temp->next != NULL)
 		{
 		temp = temp->next;
-		m = (dinh+i)->chiSoDinh;
-		n = temp->chiSoDinh;
+		m = (dinh+i)->ChiSoDinh;
+		n = temp->ChiSoDinh;
 		veCanh(x[m], y[m], x[n], y[n]);
 		}
 	}
 }
-void veCanhKetQua(int DinhDau[], int DinhDuoi[], int soDinh, int x[], int y[])
+void veCanhKetQua(int DinhDau[], int DinhDuoi[], int SoDinh, int x[], int y[])
 {
-	int n, m;
-	for(int i=1; i < soDinh; i++)
+	int m, n;
+	for(int i=1; i < SoDinh; i++)
 	{
 		m = DinhDau[i];
 		n = DinhDuoi[i];
@@ -96,39 +101,39 @@ void veCanhKetQua(int DinhDau[], int DinhDuoi[], int soDinh, int x[], int y[])
 }
 void veDoThi(Dinh *dinh, int SoDinh, int xTT, int yTT, int x[], int y[])
 {
-	int r = 300, num=1;
+	int r = 300, num = 1;					//ban kinh do thi, chi so dinh
 	char str[10];
-	setbkcolor(LIGHTGRAY);		//mau nen
-	setfillstyle(SOLID_FILL, LIGHTGRAY);  //cach to nen va mau to (nen cung mau voi floodfill)
+	setbkcolor(LIGHTGRAY);				//mau nen
+	setfillstyle(SOLID_FILL, LIGHTGRAY);  		//cach to nen va mau to 
 	for(int i = 1; i <= SoDinh; i++)
 	{
 		x[i] = xTT + r * cos((2*PI/SoDinh)*i);
 		y[i] = yTT + r * sin((2*PI/SoDinh)*i);
-		setcolor(LIGHTGRAY);							//mau vien vong tron
-		circle(x[i], y[i], 30);  						// moi dinh la 1 vong tron co ban kinh 15
-		floodfill(x[i], y[i], LIGHTGRAY);					//to mau vong tron
-		setcolor(BLACK);							//mau chu
-		settextstyle(DEFAULT_FONT, HORIZ_DIR, 3); 				//chinh kieu chu
-		sprintf(str, "%d", num);						//chuyen kieu int sang char
-		outtextxy(x[i]-12, y[i]-12, str);					//ghi chu
+		setcolor(LIGHTGRAY);				//mau vien vong tron	
+		circle(x[i], y[i], 30);  						
+		floodfill(x[i], y[i], LIGHTGRAY);			//to mau vong tron	
+		setcolor(BLACK);					//mau chu	
+		settextstyle(DEFAULT_FONT, HORIZ_DIR, 3); 	//chinh kieu chu	
+		sprintf(str, "%d", num);				//chuyen int -> char	
+		outtextxy(x[i]-12, y[i]-12, str);			//ghi chi so dinh	
 		num++;
 	} 
 } 
 void DFS(Dinh *dinh, int ChuaXet[], int i, int DinhDau[], int DinhDuoi[],int *dem)
 {
-	int n, k=0;
+	int j, k=0;
 	ChuaXet[i] = 0;
 	Dinh *temp = (dinh+i);
 	while(temp->next != NULL)
 	{
 		temp = temp->next;
-		n=temp->chiSoDinh;
-		if(ChuaXet[n] == 1)
+		j = temp->ChiSoDinh;
+		if(ChuaXet[j] == 1)
 		{	
 			k = ++*dem;
 			DinhDau[k]=i;
-			DinhDuoi[k]=n;
-			DFS(dinh, ChuaXet, n, DinhDau, DinhDuoi, dem);
+			DinhDuoi[k]=j;
+			DFS(dinh, ChuaXet, j, DinhDau, DinhDuoi, dem);
 		}
 	}
 }
@@ -136,31 +141,27 @@ void inKetQua(int DinhDau[], int DinhDuoi[], int SoDinh)
 {
 	printf("\nCac canh cua cay khung: \n");
 	for(int i = 1; i < SoDinh; i++)
-	{
 		printf("Canh thu %d: %d - %d\n", i, DinhDau[i], DinhDuoi[i]);
-	}
 }
 int main()
 {
-	int SoDinh, xTT = 350, yTT = 350, dem=0;					//xTT va yTT: toa do tam do thi
+	int SoDinh, xTT = 350, yTT = 350, dem=0;		//xTT, yTT: toa do trung tam do thi
 	int x[100], y[100], ChuaXet[100], DinhDau[100], DinhDuoi[100];
-	FILE *input = fopen("D:\\HocC\\DoAnLTTT\\input.txt", "r"); //lay file input o che do chi doc
+	FILE *input = fopen("D:\\HocC\\DoAnLTTT\\input.txt", "r");  
 	if (input == NULL) 
 	{
 		printf("Loi khong tim thay file!");
 		return 0;
 	}
-	fscanf(input, "%d", &SoDinh); 
-	printf("So dinh: %d\n", SoDinh);
 	Dinh *dinh;
-	docDuLieuDauVao(&dinh, SoDinh, input);
+	docDuLieuDauVao(&dinh, &SoDinh, input);
 	for(int i = 1; i <= SoDinh; i++) ChuaXet[i] = 1;
  	DFS(dinh, ChuaXet, 1, DinhDau, DinhDuoi, &dem);	
 	inKetQua(DinhDau, DinhDuoi, SoDinh);
-	initwindow(1500,700); 									//dat kich thuoc cho cua so
+	initwindow(1500,700); 			//Thiet lap kich thuoc cua so do hoa
 	veDoThi(dinh, SoDinh, xTT, yTT, x, y);
 	veCanhBanDau(dinh, SoDinh, x,y);
-	xTT = 1100;										//di chuyen tam do thi de ve do thi thu 2
+	xTT = 1100;					//Di chuyen xTT de ve do thi moi
 	veDoThi(dinh, SoDinh, xTT, yTT, x, y);
 	veCanhKetQua(DinhDau, DinhDuoi, SoDinh, x, y);
 	getch();
@@ -169,4 +170,3 @@ int main()
 	fclose(input);
 	return 0;
 }
-
